@@ -8,7 +8,7 @@ terraform {
     }
     scalr = {
         source = "registry.scalr.dev/scalr/scalr"
-        version= "1.0.0-rc-feature-scalrcore-21901"
+        version= "1.0.0-rc-develop"
     }
   }
 }

@@ -41,6 +41,7 @@ resource "aws_iam_role" "role_delegation_test" {
         {
           Action   = [
                 "ec2:*",
+                "ssm:*"
           ]
           Effect   = "Allow"
           Resource = "*"
@@ -56,7 +57,7 @@ resource "scalr_provider_configuration" "aws" {
   name                   = "aws_dev"
   account_id             = var.account_id
   export_shell_variables = false
-  is_shared = false
+  environments = ["*"]
   aws {
     account_type        = "regular"
     credentials_type    = "role_delegation"
@@ -75,11 +76,21 @@ resource "scalr_environment" "test" {
   # default_provider_configuration = ["pcfg-1", "pcfg-2"]
 }
 
+data "scalr_vcs_provider" test {
+  name = "pd"
+  account_id = var.account_id
+}
+
 resource "scalr_workspace" "test" {
   name                   = "workspace-pcfg-demo"
   environment_id         = scalr_environment.test.id
   auto_apply             = false
   operations             = false
+  vcs_provider_id = data.scalr_vcs_provider.test.id
+  vcs_repo {
+      identifier          = "DayS1eeper/terraform_aws_apache_demo"
+      branch              = "master"
+  }
 
   provider_configuration {
     id = scalr_provider_configuration.aws.id
